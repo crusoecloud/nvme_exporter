@@ -24,6 +24,7 @@ Running the exporter requires the nvme-cli package to be installed on the host.
 | Name | Description |
 |----|-------------------------------------------------|
 port | Listen port number. Type: String. Default: 9998 |
+temperature_scale | celsius or fahrenheit or kelvin. Type: String. Default: 'celsius' |
 
 ### Sample Output
 
