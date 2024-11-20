@@ -51,7 +51,14 @@ func TestGetDeviceListV1(t *testing.T) {
 	/*
 		Modern versions of nvme-cli use 64bit ints for sizes, but have a new JSON format
 	*/
-	expectedOldDevices := []string{"/dev/nvme0n1"}
+	expectedOldDevices := []nvmeNamespace{{
+		devicePath:     "/dev/nvme0n1",
+		nsController:   "nvme0",
+		nsMaximumLBA:   -1,
+		nsSectorSize:   -1,
+		nsUsedBytes:    -1,
+		nsPhysicalSize: -1,
+	}}
 	oldDevicesJson := `{
       "Devices":[
 			{
@@ -68,11 +75,18 @@ func TestGetDeviceListV1(t *testing.T) {
       ]
 	}`
 	if oldDevices := getDeviceList(oldDevicesJson); !reflect.DeepEqual(oldDevices, expectedOldDevices) {
-		t.Errorf("Expected old format %s, got %s", expectedOldDevices, oldDevices)
+		t.Errorf("Expected old format %v, got %v", expectedOldDevices, oldDevices)
 	}
 }
 func TestGetDeviceListV2(t *testing.T) {
-	expectedNewDevices := []string{"/dev/nvme2n1"}
+	expectedNewDevices := []nvmeNamespace{{
+		devicePath:     "/dev/nvme2n1",
+		nsController:   "nvme2",
+		nsMaximumLBA:   25004872368,
+		nsSectorSize:   512,
+		nsUsedBytes:    2097152,
+		nsPhysicalSize: 12802494652416,
+	}}
 	newDevicesJson := `{
       "Devices":[
 		{
@@ -113,11 +127,18 @@ func TestGetDeviceListV2(t *testing.T) {
 	  ]
 	}`
 	if newDevices := getDeviceList(newDevicesJson); !reflect.DeepEqual(newDevices, expectedNewDevices) {
-		t.Errorf("Expected new format %s, got %s", expectedNewDevices, newDevices)
+		t.Errorf("Expected new format %v, got %v", expectedNewDevices, newDevices)
 	}
 }
 func TestGetDeviceListV3(t *testing.T) {
-	expectedDevices := []string{"/dev/nvme4n1"}
+	expectedDevices := []nvmeNamespace{{
+		devicePath:     "/dev/nvme4n1",
+		nsController:   "nvme4",
+		nsMaximumLBA:   25004872368,
+		nsSectorSize:   512,
+		nsUsedBytes:    2097152,
+		nsPhysicalSize: 12802494652416,
+	}}
 	devicesJson := `{
       "Devices":[
 		{
@@ -144,6 +165,6 @@ func TestGetDeviceListV3(t *testing.T) {
 	  ]
 	}`
 	if devices := getDeviceList(devicesJson); !reflect.DeepEqual(devices, expectedDevices) {
-		t.Errorf("Expected new format %s, got %s", expectedDevices, devices)
+		t.Errorf("Expected new format %v, got %v", expectedDevices, devices)
 	}
 }
