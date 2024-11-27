@@ -168,3 +168,152 @@ func TestGetDeviceListV3(t *testing.T) {
 		t.Errorf("Expected new format %v, got %v", expectedDevices, devices)
 	}
 }
+
+func TestGetDeviceListV4(t *testing.T) {
+	expectedDevices := []nvmeNamespace{
+		{
+			devicePath:     "/dev/nvme9n1",
+			nsController:   "nvme9",
+			nsMaximumLBA:   268435456,
+			nsSectorSize:   512,
+			nsUsedBytes:    137438953472,
+			nsPhysicalSize: 137438953472,
+		},
+		{
+			devicePath:     "/dev/nvme3n1",
+			nsController:   "nvme3",
+			nsMaximumLBA:   1875385008,
+			nsSectorSize:   512,
+			nsUsedBytes:    7486193664,
+			nsPhysicalSize: 960197124096,
+		},
+	}
+
+	mixedDevicesJson := `{
+  "Devices":[
+    {
+      "HostNQN":"2f91420a-922f-5e49-b86e-b6bdc2f62412",
+      "HostID":"95a57b1a-be86-4528-b093-57c49ee379d6",
+      "Subsystems":[
+        {
+          "Subsystem":"nvme-subsys9",
+          "SubsystemNQN":"nqn.2016-01.com.lightbitslabs:uuid:696-aa11-4912-acf9-eb2cfcd",
+          "Controllers":[
+            {
+              "Controller":"nvme0",
+              "Cntlid":"566",
+              "SerialNumber":"6ab81c478ac",
+              "ModelNumber":"Lightbits LightOS",
+              "Firmware":"3.6",
+              "Transport":"tcp",
+              "Address":"traddr=10.50.4.15,trsvcid=4421",
+              "Slot":"",
+              "Namespaces":[
+              ],
+              "Paths":[
+                {
+                  "Path":"nvme9c0n1",
+                  "ANAState":"inaccessible"
+                }
+              ]
+            },
+            {
+              "Controller":"nvme10",
+              "Cntlid":"390",
+              "SerialNumber":"69a8c48ac",
+              "ModelNumber":"Lightbits LightOS",
+              "Firmware":"3.6",
+              "Transport":"tcp",
+              "Address":"traddr=10.50.4.14,trsvcid=4421",
+              "Slot":"",
+              "Namespaces":[
+              ],
+              "Paths":[
+              ]
+            },
+            {
+              "Controller":"nvme11",
+              "Cntlid":"3843",
+              "SerialNumber":"69a8c48ac",
+              "ModelNumber":"Lightbits LightOS",
+              "Firmware":"3.6",
+              "Transport":"tcp",
+              "Address":"traddr=10.50.4.13,trsvcid=4420",
+              "Slot":"",
+              "Namespaces":[
+              ],
+              "Paths":[
+                {
+                  "Path":"nvme9c11n1",
+                  "ANAState":"optimized"
+                }
+              ]
+            },
+            {
+              "Controller":"nvme9",
+              "Cntlid":"5126",
+              "SerialNumber":"69a8c48ac",
+              "ModelNumber":"Lightbits LightOS",
+              "Firmware":"3.6",
+              "Transport":"tcp",
+              "Address":"traddr=10.50.4.11,trsvcid=4421",
+              "Slot":"",
+              "Namespaces":[
+              ],
+              "Paths":[
+              ]
+            }
+          ],
+          "Namespaces":[
+            {
+              "NameSpace":"nvme9n1",
+              "Generic":"ng9n1",
+              "NSID":29017,
+              "UsedBytes":137438953472,
+              "MaximumLBA":268435456,
+              "PhysicalSize":137438953472,
+              "SectorSize":512
+            }
+          ]
+        },
+        {
+          "Subsystem":"nvme-subsys3",
+          "SubsystemNQN":"nqn.2016-08.com.micron:nvme:nvm-subsystem-sn-2402473F6E8C",
+          "Controllers":[
+            {
+              "Controller":"nvme3",
+              "Cntlid":"0",
+              "SerialNumber":"24023F6EC",
+              "ModelNumber":"Micron_7450_MTF960TFR",
+              "Firmware":"EMU20",
+              "Transport":"pcie",
+              "Address":"0000:4f:00.0",
+              "Slot":"12",
+              "Namespaces":[
+                {
+                  "NameSpace":"nvme3n1",
+                  "Generic":"ng3n1",
+                  "NSID":1,
+                  "UsedBytes":7486193664,
+                  "MaximumLBA":1875385008,
+                  "PhysicalSize":960197124096,
+                  "SectorSize":512
+                }
+              ],
+              "Paths":[
+              ]
+            }
+          ],
+          "Namespaces":[
+          ]
+        }
+      ]
+    }
+  ]
+}
+`
+	if devices := getDeviceList(mixedDevicesJson); !reflect.DeepEqual(devices, expectedDevices) {
+		t.Errorf("Expected new format %v, got %v", expectedDevices, devices)
+	}
+
+}
