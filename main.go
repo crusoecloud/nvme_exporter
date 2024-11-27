@@ -362,12 +362,12 @@ func getControllerFromNs(ns string) string {
 }
 
 func getDeviceList(nvmeListOutput string) []nvmeNamespace {
-	// There are three possible formats for
 	if !gjson.Valid(nvmeListOutput) {
 		log.Fatalf("nvmeListOutput json is not valid\n%s", nvmeListOutput)
 	}
 	var deviceList []nvmeNamespace
 
+	// Some namespaces are not attached to a controller, like remote lightbits ones
 	devices := gjson.Get(nvmeListOutput, "Devices.#.Subsystems.#.Namespaces")
 	if len(devices.Array()) > 0 {
 		for _, subsystems := range devices.Array() {
@@ -388,7 +388,7 @@ func getDeviceList(nvmeListOutput string) []nvmeNamespace {
 			}
 		}
 	}
-	// If a controller is
+	// Most namespaces are attached to a local controller, on newer versions of nvme-cli
 	devices = gjson.Get(nvmeListOutput, "Devices.#.Subsystems.#.Controllers")
 	if len(devices.Array()) > 0 {
 		for _, subsystems := range devices.Array() {
@@ -416,6 +416,7 @@ func getDeviceList(nvmeListOutput string) []nvmeNamespace {
 		}
 		return deviceList
 	}
+	// Older versions of nvme-cli just export Devices & DevicePaths, without hierarchy
 	devices = gjson.Get(nvmeListOutput, "Devices.#.DevicePath")
 	if len(devices.Array()) > 0 {
 		for _, devicePath := range devices.Array() {
