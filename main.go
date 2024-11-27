@@ -388,10 +388,7 @@ func getDeviceList(nvmeListOutput string) []nvmeNamespace {
 			}
 		}
 	}
-	if len(deviceList) > 0 {
-		return deviceList
-	}
-	// Some machines have multiple controllers, and 'nvme list -o json' adds them in, changing the output format
+	// If a controller is
 	devices = gjson.Get(nvmeListOutput, "Devices.#.Subsystems.#.Controllers")
 	if len(devices.Array()) > 0 {
 		for _, subsystems := range devices.Array() {
